@@ -7632,6 +7632,11 @@
     zh-Hans = 以八字动作移动手机，校准罗盘，并在地图上固定箭头方向。
     zh-Hant = 以 8 字形移動手機以校準指南針並固定地圖上的箭頭方向
 
+  [long_tap_toast]
+    comment = Toast text when user hides UI with long tap
+    tags = android
+    en = Long-tap the map again to see the interface
+
   [downloader_update_all_button]
     comment = Update all button text
     tags = android,ios

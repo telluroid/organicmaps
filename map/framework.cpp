@@ -103,6 +103,7 @@ char const kShowDebugInfo[] = "DebugInfo";
 
 auto constexpr kLargeFontsScaleFactor = 1.6;
 size_t constexpr kMaxTrafficCacheSizeBytes = 64 /* Mb */ * 1024 * 1024;
+auto constexpr kBuildingCentroidThreshold = 10.0;
 
 // TODO!
 // To adjust GpsTrackFilter was added secret command "?gpstrackaccuracy:xxx;"
@@ -1985,8 +1986,12 @@ void Framework::OnTapEvent(place_page::BuildInfo const & buildInfo)
 
     return;
   }
-
-  if (placePageInfo)
+    
+  if (buildInfo.m_isLongTap) {
+    // Show or hide UI on long tap
+    DeactivateMapSelection(true /* notifyUI */);
+  }
+  else if (placePageInfo)
   {
     auto const prevTrackId = m_currentPlacePageInfo ? m_currentPlacePageInfo->GetTrackId()
                                                     : kml::kInvalidTrackId;
@@ -2149,7 +2154,7 @@ std::optional<place_page::Info> Framework::BuildPlacePageInfo(
   auto const isFeatureMatchingEnabled = buildInfo.IsFeatureMatchingEnabled();
 
   // Using VisualParams inside FindTrackInTapPosition/GetDefaultTapRect requires drapeEngine.
-  if (m_drapeEngine != nullptr && buildInfo.IsTrackMatchingEnabled() && !buildInfo.m_isLongTap &&
+  if (m_drapeEngine != nullptr && buildInfo.IsTrackMatchingEnabled() &&
       !(isFeatureMatchingEnabled && selectedFeature.IsValid()))
   {
     auto const trackSelectionInfo = FindTrackInTapPosition(buildInfo);
@@ -2160,18 +2165,30 @@ std::optional<place_page::Info> Framework::BuildPlacePageInfo(
     }
   }
 
+  bool isBuildingSelected = false;
   if (isFeatureMatchingEnabled && !selectedFeature.IsValid())
+  {
     selectedFeature = FindBuildingAtPoint(buildInfo.m_mercator);
+    isBuildingSelected = selectedFeature.IsValid();
+  }
 
   bool showMapSelection = false;
   if (selectedFeature.IsValid())
   {
+    // Selection circle should match feature
     FillFeatureInfo(selectedFeature, outInfo);
-    if (buildInfo.m_isLongTap)
-      outInfo.SetMercator(buildInfo.m_mercator);
+
+    if (isBuildingSelected)
+    {
+      // Calculate distance between building centroid and tap point
+      double distancePx = (m_currentModelView.GtoP(buildInfo.m_mercator) - m_currentModelView.GtoP(outInfo.GetMercator())).Length();
+      // If user taps on a building far from it's centroid (>10px) move selection circle to tap position
+      if (distancePx > kBuildingCentroidThreshold * df::VisualParams::Instance().GetVisualScale())
+        outInfo.SetMercator(buildInfo.m_mercator);
+    }
     showMapSelection = true;
   }
-  else if (buildInfo.m_isLongTap || buildInfo.m_source != place_page::BuildInfo::Source::User)
+  else
   {
     if (isFeatureMatchingEnabled)
       FillPointInfo(outInfo, buildInfo.m_mercator, {});
