@@ -100,6 +100,7 @@ char const kLargeFontsSize[] = "LargeFontsSize";
 char const kTranslitMode[] = "TransliterationMode";
 char const kPreferredGraphicsAPI[] = "PreferredGraphicsAPI";
 char const kShowDebugInfo[] = "DebugInfo";
+char const kMapLanguageCode[] = "MapLanguageCode";
 
 auto constexpr kLargeFontsScaleFactor = 1.6;
 size_t constexpr kMaxTrafficCacheSizeBytes = 64 /* Mb */ * 1024 * 1024;
@@ -1534,6 +1535,8 @@ void Framework::CreateDrapeEngine(ref_ptr<dp::GraphicsContextFactory> contextFac
 
   Allow3dMode(allow3d, allow3dBuildings);
 
+  SetMapLanguageCode(languages::GetCurrentMapLanguageCode());
+
   LoadViewport();
 
   if (m_connectToGpsTrack)
@@ -2366,6 +2369,14 @@ void Framework::SaveTransliteration(bool allowTranslit)
 {
   settings::Set(kTranslitMode, allowTranslit ? Transliteration::Mode::Enabled
                                              : Transliteration::Mode::Disabled);
+}
+
+void Framework::SetMapLanguageCode(const std::string& languageCode)
+{
+  if (m_drapeEngine == nullptr)
+    return;
+
+  m_drapeEngine->SetMapLanguageCode(languageCode);
 }
 
 void Framework::Allow3dMode(bool allow3d, bool allow3dBuildings)

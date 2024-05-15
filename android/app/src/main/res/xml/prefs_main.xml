@@ -97,11 +97,17 @@
       android:summary="@string/enable_show_on_lock_screen_description"
       android:defaultValue="true"
       android:order="17"/>
+    <Preference
+        android:key="@string/pref_map_locale"
+        android:title="@string/pref_map_locale_title"
+        app:singleLineTitle="false"
+        android:persistent="false"
+        android:order="18"/>
     <ListPreference
       android:entries="@array/appearance"
       android:entryValues="@array/appearance_values"
       android:key="@string/pref_map_style"
-      android:order="18"
+      android:order="19"
       android:title="@string/pref_map_style_title"
       app:singleLineTitle="false" />
   </androidx.preference.PreferenceCategory>
