@@ -1,25 +1,19 @@
 #include "copyright_label.hpp"
 #include "drape_gui.hpp"
 #include "gui_text.hpp"
-#include "ruler_helper.hpp"
 
 #include "drape_frontend/animation/opacity_animation.hpp"
-#include "drape_frontend/animation/value_mapping.hpp"
 #include "drape_frontend/batcher_bucket.hpp"
-
-#include "base/timer.hpp"
 
 #include <functional>
 #include <utility>
-
-using namespace std::placeholders;
 
 namespace gui
 {
 namespace
 {
-double const kCopyrightVisibleTime = 10.0f;
-double const kCopyrightHideTime = 0.25f;
+constexpr double kCopyrightVisibleTime = 10.0f;
+constexpr double kCopyrightHideTime = 0.25f;
 
 class CopyrightHandle : public StaticLabelHandle
 {

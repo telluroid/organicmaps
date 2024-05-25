@@ -271,6 +271,7 @@ void TextureManager::UpdateGlyphTextures(ref_ptr<dp::GraphicsContext> context)
 ref_ptr<Texture> TextureManager::AllocateGlyphTexture()
 {
   std::lock_guard const lock(m_glyphTexturesMutex);
+  // TODO(AB): Would a bigger texture be better?
   m2::PointU size(kGlyphsTextureSize, kGlyphsTextureSize);
   m_glyphTextures.push_back(make_unique_dp<FontTexture>(size, make_ref(m_glyphManager), make_ref(m_textureAllocator)));
   return make_ref(m_glyphTextures.back());
