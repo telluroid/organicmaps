@@ -2,7 +2,6 @@
 #include "drape_frontend/map_shape.hpp"
 #include "drape_frontend/visual_params.hpp"
 
-#include "drape/bidi.hpp"
 #include "drape/font_constants.hpp"
 
 #include <algorithm>

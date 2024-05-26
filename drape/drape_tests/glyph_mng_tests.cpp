@@ -2,7 +2,6 @@
 
 #include "drape/drape_tests/img.hpp"
 
-#include "drape/bidi.hpp"
 #include "drape/font_constants.hpp"
 #include "drape/glyph_manager.hpp"
 #include "drape/harfbuzz_shaping.hpp"
@@ -27,7 +26,6 @@ namespace glyph_mng_tests
 class GlyphRenderer
 {
   FT_Library m_freetypeLibrary;
-  strings::UniString m_bidiToDraw;
   std::string m_utf8;
   int m_fontPixelSize;
   char const * m_lang;
@@ -58,7 +56,6 @@ public:
 
   void SetString(std::string const & s, int fontPixelSize, char const * lang)
   {
-    m_bidiToDraw = bidi::log2vis(strings::MakeUniString(s));
     m_utf8 = s;
     m_fontPixelSize = fontPixelSize;
     m_lang = lang;
@@ -229,26 +226,6 @@ public:
       painter.drawText(pen, QString::fromUtf8(m_utf8.c_str(), m_utf8.size()));
     }
 
-    //////////////////////////////////////////////////////////////////
-    // Old drape renderer.
-    pen = QPoint(10, 200);
-    for (auto c : m_bidiToDraw)
-    {
-      auto g = m_mng->GetGlyph(c);
-
-      if (g.m_image.m_data)
-      {
-        uint8_t * d = SharedBufferManager::GetRawPointer(g.m_image.m_data);
-        QPoint currentPen = pen;
-        currentPen.rx() += g.m_metrics.m_xOffset;
-        currentPen.ry() -= g.m_metrics.m_yOffset;
-        painter.drawImage(currentPen, CreateImage(g.m_image.m_width, g.m_image.m_height, d),
-            QRect(dp::kSdfBorder, dp::kSdfBorder, g.m_image.m_width - 2 * dp::kSdfBorder, g.m_image.m_height - 2 * dp::kSdfBorder));
-      }
-      pen += QPoint(g.m_metrics.m_xAdvance,  g.m_metrics.m_yAdvance);
-
-      g.m_image.Destroy();
-    }
   }
 
 private:

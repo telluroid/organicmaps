@@ -8,7 +8,6 @@
 #include "base/stl_helpers.hpp"
 #include "base/string_utils.hpp"
 
-#include "drape/bidi.hpp"
 #include "drape/font_constants.hpp"
 
 #include <algorithm>
