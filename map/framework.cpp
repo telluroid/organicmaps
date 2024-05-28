@@ -1884,6 +1884,8 @@ void Framework::ActivateMapSelection()
 
   auto & bm = GetBookmarkManager();
 
+  bm.RemoveRecentlyDeletedBookmark();
+
   if (m_currentPlacePageInfo->GetSelectedObject() == df::SelectionShape::OBJECT_TRACK)
     bm.OnTrackSelected(m_currentPlacePageInfo->GetTrackId());
   else
@@ -1915,12 +1917,16 @@ void Framework::DeactivateMapSelection(bool notifyUI)
   if (notifyUI && m_onPlacePageClose)
     m_onPlacePageClose(!somethingWasAlreadySelected);
 
+
   if (somethingWasAlreadySelected)
   {
+    auto & bm = GetBookmarkManager();
+    
     DeactivateHotelSearchMark();
-    GetBookmarkManager().OnTrackDeselected();
+    bm.OnTrackDeselected();
 
     m_currentPlacePageInfo = {};
+    bm.RemoveRecentlyDeletedBookmark();
 
     if (m_drapeEngine != nullptr)
       m_drapeEngine->DeselectObject();
