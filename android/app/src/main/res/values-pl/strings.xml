@@ -624,9 +624,6 @@
 	  <item quantity="other">Znaleziono %d plików. Zobaczysz je po konwersji.</item>
 	  <item quantity="two">Znaleziono %d pliki. Zobaczysz je po konwersji.</item>
 	</plurals>
-	<plurals name="objects">
-	  <item quantity="other">%d miejsce</item>
-	</plurals>
 	<plurals name="places">
 	  <item quantity="other">%d miejsc</item>
 	</plurals>

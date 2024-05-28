@@ -623,9 +623,6 @@
 	<plurals name="bookmarks_detect_message">
 	  <item quantity="other">%d dosya bulundu. Dönüşümden sonra onları göreceksiniz.</item>
 	</plurals>
-	<plurals name="objects">
-	  <item quantity="other">%d obje</item>
-	</plurals>
 	<plurals name="places">
 	  <item quantity="other">%d yer</item>
 	</plurals>

@@ -628,11 +628,6 @@
 	  <item quantity="one">%d файл был найден. Вы увидите его после конвертации.</item>
 	  <item quantity="other">%d файлов было найдено. Вы увидите их после конвертации.</item>
 	</plurals>
-	<plurals name="objects">
-	  <item quantity="few">%d объекта</item>
-	  <item quantity="one">%d объект</item>
-	  <item quantity="other">%d объектов</item>
-	</plurals>
 	<plurals name="places">
 	  <item quantity="few">%d места</item>
 	  <item quantity="one">%d место</item>

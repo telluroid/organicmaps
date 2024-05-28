@@ -620,10 +620,6 @@
 	  <item quantity="one">Βρέθηκε %d αρχείο. Θα το δείτε μετά τη μετατροπή.</item>
 	  <item quantity="other">έχουν βρεθεί %d αρχεία. Θα τα δείτε μετά τη μετατροπή.</item>
 	</plurals>
-	<plurals name="objects">
-	  <item quantity="one">%d αντικείμενο</item>
-	  <item quantity="other">%d αντικείμενα</item>
-	</plurals>
 	<plurals name="places">
 	  <item quantity="one">%d τοποθεσία</item>
 	  <item quantity="other">%d τοποθεσίες</item>

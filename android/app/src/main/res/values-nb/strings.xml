@@ -624,9 +624,6 @@
 	  <item quantity="one">%d filen ble funnet. Du vil se dem etter konverteringen.</item>
 	  <item quantity="other">%d filer funnet. Du vil se dem etter konverteringen.</item>
 	</plurals>
-	<plurals name="objects">
-	  <item quantity="other">%d sted</item>
-	</plurals>
 	<plurals name="places">
 	  <item quantity="other">%d steder</item>
 	</plurals>

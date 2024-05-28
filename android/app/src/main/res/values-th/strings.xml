@@ -592,9 +592,6 @@
 	<plurals name="bookmarks_detect_message">
 	  <item quantity="other">%d ไฟล์ที่ค้นพบ คุณจะเห็นพวกเขาหลังจากการแปลง</item>
 	</plurals>
-	<plurals name="objects">
-	  <item quantity="other">%d สถานที่</item>
-	</plurals>
 	<plurals name="places">
 	  <item quantity="other">%d สถานที่ต่าง ๆ</item>
 	</plurals>

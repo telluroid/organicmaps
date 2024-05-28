@@ -591,9 +591,6 @@
 	  <item quantity="one">%d dã tìm thấy một tệp. Bạn sẽ thấy nó sau khi chuyển đổi.</item>
 	  <item quantity="other">%d tập tin đã được tìm thấy. Bạn sẽ thấy chúng sau khi chuyển đổi.</item>
 	</plurals>
-	<plurals name="objects">
-	  <item quantity="other">%d nơi</item>
-	</plurals>
 	<plurals name="places">
 	  <item quantity="other">%d các nơi</item>
 	</plurals>

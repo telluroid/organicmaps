@@ -620,10 +620,6 @@
 	  <item quantity="one">%d Datei wurde gefunden. Sie werden sie nach der Konvertierung sehen.</item>
 	  <item quantity="other">%d Dateien wurden gefunden. Sie werden sie nach der Konvertierung sehen.</item>
 	</plurals>
-	<plurals name="objects">
-	  <item quantity="one">%d Objekt</item>
-	  <item quantity="other">%d Objekte</item>
-	</plurals>
 	<plurals name="places">
 	  <item quantity="one">%d Ort</item>
 	  <item quantity="other">%d Orte</item>

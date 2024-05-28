@@ -103,9 +103,6 @@
 	  <item quantity="one">Se encontró %d archivo. Lo verás después de la conversión.</item>
 	  <item quantity="other">Se han encontrado %d archivos. Los verás después de la conversión.</item>
 	</plurals>
-	<plurals name="objects">
-	  <item quantity="other">%d lugar</item>
-	</plurals>
 	<plurals name="places">
 	  <item quantity="other">%d lugares</item>
 	</plurals>

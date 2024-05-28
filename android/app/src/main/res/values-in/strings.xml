@@ -593,9 +593,6 @@
 	  <item quantity="one">%d file ditemukan. Anda akan melihatnya setelah mengonversi.</item>
 	  <item quantity="other">%d file telah ditemukan. Anda akan melihatnya setelah konversi.</item>
 	</plurals>
-	<plurals name="objects">
-	  <item quantity="other">tempat %d</item>
-	</plurals>
 	<plurals name="places">
 	  <item quantity="other">tempat %d</item>
 	</plurals>

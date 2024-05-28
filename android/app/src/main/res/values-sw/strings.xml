@@ -156,9 +156,6 @@
 	  <item quantity="one">Faili %d ilipatikana. Utaiona baada ya uongofu.</item>
 	  <item quantity="other">Files %d zimepatikana. Utawaona baada ya uongofu.</item>
 	</plurals>
-	<plurals name="objects">
-	  <item quantity="other">Eneo %d</item>
-	</plurals>
 	<plurals name="places">
 	  <item quantity="other">Maeneo %d</item>
 	</plurals>

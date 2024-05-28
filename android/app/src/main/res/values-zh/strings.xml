@@ -601,9 +601,6 @@
 	<plurals name="bookmarks_detect_message">
 	  <item quantity="other">找到%d个文件。 转换后你会看到它。</item>
 	</plurals>
-	<plurals name="objects">
-	  <item quantity="other">%d 地点</item>
-	</plurals>
 	<plurals name="places">
 	  <item quantity="other">%d 地点</item>
 	</plurals>

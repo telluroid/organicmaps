@@ -614,11 +614,6 @@
 	<string name="please_wait">Пачакайце…</string>
 	<string name="phone_number">Нумар тэлефона</string>
 	<string name="profile">Профіль OpenStreetMap</string>
-	<plurals name="objects">
-	  <item quantity="few">%d аб\'екты</item>
-	  <item quantity="one">%d аб\'ект</item>
-	  <item quantity="other">%d аб\'ектаў</item>
-	</plurals>
 	<plurals name="places">
 	  <item quantity="few">%d месцы</item>
 	  <item quantity="one">%d месца</item>

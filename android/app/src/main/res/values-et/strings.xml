@@ -616,10 +616,6 @@
 	  <item quantity="one">%d fail leiti. Näed seda peale teisendamist.</item>
 	  <item quantity="other">%d faili leiti. Näed neid peale teisendamist.</item>
 	</plurals>
-	<plurals name="objects">
-	  <item quantity="one">%d objekt</item>
-	  <item quantity="other">%d objekti</item>
-	</plurals>
 	<plurals name="places">
 	  <item quantity="one">%d koht</item>
 	  <item quantity="other">%d kohta</item>

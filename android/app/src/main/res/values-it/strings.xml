@@ -607,10 +607,6 @@
 	  <item quantity="one">%d file è stato trovato. Lo vedrai dopo la conversione.</item>
 	  <item quantity="other">%d file trovati. Li vedrai dopo la conversione.</item>
 	</plurals>
-	<plurals name="objects">
-	  <item quantity="one">%d oggetto</item>
-	  <item quantity="other">%d oggetti</item>
-	</plurals>
 	<plurals name="places">
 	  <item quantity="one">%d luogo</item>
 	  <item quantity="other">%d luoghi</item>

@@ -578,10 +578,6 @@
 	  <item quantity="one">Открит е %d файл. Можете да го видите след конвертирането.</item>
 	  <item quantity="other">Открити са %d файла. Можете да ги видите след конвертирането.</item>
 	</plurals>
-	<plurals name="objects">
-	  <item quantity="one">%d обект</item>
-	  <item quantity="other">%d обекта</item>
-	</plurals>
 	<plurals name="places">
 	  <item quantity="one">%d място</item>
 	  <item quantity="other">%d места</item>

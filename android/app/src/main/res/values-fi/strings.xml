@@ -626,10 +626,6 @@
 	  <item quantity="one">%d tiedosto löydettiin. Näet sen muunnoksen jälkeen.</item>
 	  <item quantity="other">%d tiedostoa löydettiin. Näet ne muunnoksen jälkeen.</item>
 	</plurals>
-	<plurals name="objects">
-	  <item quantity="one">%d kohde</item>
-	  <item quantity="other">%d kohdetta</item>
-	</plurals>
 	<plurals name="places">
 	  <item quantity="one">%d paikka</item>
 	  <item quantity="other">%d paikkaa</item>

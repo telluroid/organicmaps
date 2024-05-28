@@ -615,10 +615,6 @@
 	  <item quantity="one">נמצא קובץ %d. יהיה ניתן לראות אותו לאחר ההמרה.</item>
 	  <item quantity="other">נמצאו %d קבצים. יהיה ניתן לראות אותם לאחר ההמרה.</item>
 	</plurals>
-	<plurals name="objects">
-	  <item quantity="one">פריט %d</item>
-	  <item quantity="other">%d פריטים</item>
-	</plurals>
 	<plurals name="places">
 	  <item quantity="one">מקום %d</item>
 	  <item quantity="other">%d מקומות</item>
