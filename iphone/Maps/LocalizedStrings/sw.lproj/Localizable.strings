@@ -1325,6 +1325,9 @@
 /* iCloud error message: iCloud is not available */
 "icloud_synchronization_error_cloud_is_unavailable" = "Hitilafu: iCloud haipatikani";
 
+/* Text for the "Recover" button on the Recently Deleted screen */
+"recover" = "Rudisha";
+
 
 /********** Types **********/
 

@@ -1325,6 +1325,9 @@
 /* iCloud error message: iCloud is not available */
 "icloud_synchronization_error_cloud_is_unavailable" = "त्रुटी: iCloud उपलब्ध नाही";
 
+/* Text for the "Recover" button on the Recently Deleted screen */
+"recover" = "पुनर्प्राप्त करा";
+
 
 /********** Types **********/
 
