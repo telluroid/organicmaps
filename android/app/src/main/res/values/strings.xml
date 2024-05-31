@@ -222,8 +222,6 @@
 	<string name="pref_zoom_summary">Display on the map</string>
 	<!--Title of Recent track Recorder in settings-->
 	<string name="trace_path">Trace Path</string>
-	<!-- Settings «Map» category: «Night style» title -->
-	<string name="pref_map_style_title">Night Mode</string>
 	<!-- Settings «Map» category: «Appearance» title -->
 	<string name="pref_map_style_title">Appearance</string>
 	<!-- Generic «Off» string -->
