@@ -183,27 +183,23 @@ public class Holders
       mSize.setText(getSizeString());
     }
 
-    private String getSizeString()
-    {
+    private String getSizeString() {
       final Resources resources = mSize.getResources();
       final int bookmarksCount = mEntity.getBookmarksCount();
       final int tracksCount = mEntity.getTracksCount();
 
-      if (mEntity.size() == 0)
-        return getQuantified(resources, R.plurals.objects, 0);
+      final String bookmarks = getQuantified(resources, R.plurals.places, bookmarksCount);
+      final String tracks = getQuantified(resources, R.plurals.tracks, tracksCount);
 
-      if (bookmarksCount > 0 && tracksCount > 0)
-      {
-        final String bookmarks = getQuantified(resources, R.plurals.places, bookmarksCount);
-        final String tracks = getQuantified(resources, R.plurals.tracks, tracksCount);
-        final String template = resources.getString(R.string.comma_separated_pair);
-        return String.format(template, bookmarks, tracks);
+      if (bookmarksCount == 0 && tracksCount == 0 || bookmarksCount > 0 && tracksCount > 0) {
+        return String.format("%s, %s", bookmarks, tracks);
       }
 
-      if (bookmarksCount > 0)
-        return getQuantified(resources, R.plurals.places, bookmarksCount);
+      if (bookmarksCount > 0) {
+        return bookmarks;
+      }
 
-      return getQuantified(resources, R.plurals.tracks, tracksCount);
+      return tracks;
     }
 
     void setEntity(@NonNull BookmarkCategory entity)
