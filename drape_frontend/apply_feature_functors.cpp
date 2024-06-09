@@ -933,7 +933,7 @@ void ApplyLineFeatureAdditional::GetRoadShieldsViewParams(ref_ptr<dp::TextureMan
   textParams.m_startOverlayRank = dp::OverlayRank1;
 
   TextLayout textLayout;
-  textLayout.Init(strings::MakeUniString(roadNumber), font.m_size, texMng);
+  textLayout.Init(roadNumber, font.m_size, texMng);
 
   // Calculate width and height of a shield.
   shieldPixelSize.x = textLayout.GetPixelLength() + 2.0 * borderWidth;

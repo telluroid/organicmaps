@@ -51,13 +51,14 @@ public:
     uint32_t m_textureIndex = 0;
   };
 
+  // TODO(AB): Remove?
   class GlyphRegion : public BaseRegion
   {
-  public:
-    float GetOffsetX() const;
-    float GetOffsetY() const;
-    float GetAdvanceX() const;
-    float GetAdvanceY() const;
+  // public:
+  //   float GetOffsetX() const;
+  //   float GetOffsetY() const;
+  //   float GetAdvanceX() const;
+  //   float GetAdvanceY() const;
   };
 
   class StippleRegion : public BaseRegion
@@ -99,10 +100,15 @@ public:
   using TGlyphsBuffer = buffer_vector<GlyphRegion, 128>;
   using TMultilineGlyphsBuffer = buffer_vector<TGlyphsBuffer, 4>;
 
-  void GetGlyphRegions(TMultilineText const & text, TMultilineGlyphsBuffer & buffers);
-  void GetGlyphRegions(strings::UniString const & text, TGlyphsBuffer & regions);
+  using TShapedTextLines = buffer_vector<text::TextMetrics, 4>;
+  text::TextMetrics ShapeSingleTextLine(float fontPixelHeight, std::string_view utf8, TGlyphsBuffer * glyphRegions);
+  TShapedTextLines ShapeMultilineText(float fontPixelHeight, std::string_view utf8, char const * delimiters,
+                                      TMultilineGlyphsBuffer & multilineGlyphRegions);
+
+  // void GetGlyphRegions(TMultilineText const & text, TMultilineGlyphsBuffer & buffers);
+  // void GetGlyphRegions(strings::UniString const & text, TGlyphsBuffer & regions);
   // This method must be called only on Frontend renderer's thread.
-  bool AreGlyphsReady(strings::UniString const & str) const;
+  bool AreGlyphsReady(TGlyphs const & glyphs) const;
 
   // On some devices OpenGL driver can't resolve situation when we upload to a texture on a thread
   // and use this texture to render on another thread. By this we move UpdateDynamicTextures call
@@ -127,27 +133,8 @@ public:
 private:
   struct GlyphGroup
   {
-    GlyphGroup()
-      : m_startChar(0), m_endChar(0), m_texture(nullptr)
-    {}
-
-    GlyphGroup(strings::UniChar const & start, strings::UniChar const & end)
-      : m_startChar(start), m_endChar(end), m_texture(nullptr)
-    {}
-
-    strings::UniChar m_startChar;
-    strings::UniChar m_endChar;
-    ref_ptr<Texture> m_texture;
-  };
-
-  struct HybridGlyphGroup
-  {
-    HybridGlyphGroup()
-      : m_texture(nullptr)
-    {}
-
-    std::set<strings::UniChar> m_glyphs;
-    ref_ptr<Texture> m_texture;
+    std::set<TGlyph> m_glyphs;
+    ref_ptr<Texture> m_texture {nullptr};
   };
 
   uint32_t m_maxTextureSize;
@@ -158,12 +145,12 @@ private:
 
   void GetGlyphsRegions(ref_ptr<FontTexture> tex, strings::UniString const & text, TGlyphsBuffer & regions);
 
+  size_t FindHybridGlyphsGroup(std::vector<text::GlyphMetrics> const & glyphs);
+  // TODO(AB): Remove
   size_t FindHybridGlyphsGroup(strings::UniString const & text);
   size_t FindHybridGlyphsGroup(TMultilineText const & text);
 
-  static uint32_t GetNumberOfUnfoundCharacters(strings::UniString const & text, HybridGlyphGroup const & group) ;
-
-  static void MarkCharactersUsage(strings::UniString const & text, HybridGlyphGroup & group);
+  static uint32_t GetNumberOfGlyphsNotInGroup(std::vector<text::GlyphMetrics> const & glyphs, GlyphGroup const & group);
 
   template<typename TGlyphGroup>
   void FillResultBuffer(strings::UniString const & text, TGlyphGroup & group, TGlyphsBuffer & regions)
@@ -177,7 +164,7 @@ private:
   template<typename TGlyphGroup>
   void FillResults(strings::UniString const & text, TGlyphsBuffer & buffers, TGlyphGroup & group)
   {
-    MarkCharactersUsage(text, group);
+    // MarkCharactersUsage(text, group);  Add each glyph in group
     FillResultBuffer<TGlyphGroup>(text, group, buffers);
   }
 
@@ -199,8 +186,8 @@ private:
     CHECK(m_isInitialized, ());
     size_t const hybridGroupIndex = FindHybridGlyphsGroup(text);
     ASSERT(hybridGroupIndex != GetInvalidGlyphGroup(), ());
-    HybridGlyphGroup & group = m_hybridGlyphGroups[hybridGroupIndex];
-    FillResults<HybridGlyphGroup>(text, buffers, group);
+    GlyphGroup & group = m_glyphGroups[hybridGroupIndex];
+    FillResults<GlyphGroup>(text, buffers, group);
   }
 
   void UpdateGlyphTextures(ref_ptr<dp::GraphicsContext> context);
@@ -227,7 +214,7 @@ private:
   drape_ptr<GlyphManager> m_glyphManager;
   drape_ptr<HWTextureAllocator> m_textureAllocator;
 
-  buffer_vector<HybridGlyphGroup, 4> m_hybridGlyphGroups;
+  buffer_vector<GlyphGroup, 4> m_glyphGroups;
 
   std::vector<drape_ptr<HWTexture>> m_texturesToCleanup;
 

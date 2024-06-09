@@ -25,7 +25,7 @@ public:
 
   void SetPenPosition(glsl::vec2 const & penOffset) {}
 
-  void operator() (dp::TextureManager::GlyphRegion const & glyph)
+  void operator() (dp::TextureManager::GlyphRegion const & glyph, dp::text::GlyphMetrics const & metrics)
   {
     m2::RectF const & mask = glyph.GetTexRect();
 
@@ -58,14 +58,14 @@ public:
     m_isFirstGlyph = true;
   }
 
-  void operator()(dp::TextureManager::GlyphRegion const & glyph)
+  void operator()(dp::TextureManager::GlyphRegion const & glyphRegion, dp::text::GlyphMetrics const & metrics)
   {
-    if (!glyph.IsValid())
+    if (!glyphRegion.IsValid())
       return;
-    m2::PointF const pixelSize = glyph.GetPixelSize() * m_textRatio;
+    m2::PointF const pixelSize = glyphRegion.GetPixelSize() * m_textRatio;
 
-    float const xOffset = glyph.GetOffsetX() * m_textRatio;
-    float const yOffset = glyph.GetOffsetY() * m_textRatio;
+    float const xOffset = metrics.m_xOffset * m_textRatio;
+    float const yOffset = metrics.m_yOffset * m_textRatio;
 
     float const upVector = -static_cast<int32_t>(pixelSize.y) - yOffset;
     float const bottomVector = -yOffset;
@@ -81,7 +81,8 @@ public:
     m_buffer.emplace_back(m_pivot, pixelPlusPen + glsl::vec2(xOffset, upVector));
     m_buffer.emplace_back(m_pivot, pixelPlusPen + glsl::vec2(pixelSize.x + xOffset, bottomVector));
     m_buffer.emplace_back(m_pivot, pixelPlusPen + glsl::vec2(pixelSize.x + xOffset, upVector));
-    m_penPosition += glsl::vec2(glyph.GetAdvanceX() * m_textRatio, glyph.GetAdvanceY() * m_textRatio);
+    // TODO(AB): yAdvance is always zero for horizontal text layouts.
+    m_penPosition += glsl::vec2(metrics.m_xAdvance * m_textRatio, metrics.m_yAdvance * m_textRatio);
   }
 
 private:
@@ -106,7 +107,7 @@ public:
 
   void SetPenPosition(glsl::vec2 const & penOffset) {}
 
-  void operator() (dp::TextureManager::GlyphRegion const & glyph)
+  void operator() (dp::TextureManager::GlyphRegion const & glyph, dp::text::GlyphMetrics const & metrics)
   {
     m2::RectF const & mask = glyph.GetTexRect();
     m_buffer.emplace_back(m_colorCoord, m_outlineCoord, glsl::ToVec2(mask.LeftTop()));
@@ -227,49 +228,60 @@ private:
 };
 
 void CalculateOffsets(dp::Anchor anchor, float textRatio,
-                      dp::TextureManager::TGlyphsBuffer const & glyphs,
+                      dp::TextureManager::TGlyphsBuffer const & glyphRegions,
+                      dp::text::TextMetrics const & metrics,
+                      //std::vector<dp::text::GlyphMetrics> const & metrics,
                       buffer_vector<size_t, 2> const & delimIndexes,
                       buffer_vector<std::pair<size_t, glsl::vec2>, 2> & result,
                       m2::PointF & pixelSize, size_t & rowsCount)
 {
   typedef std::pair<float, float> TLengthAndHeight;
   buffer_vector<TLengthAndHeight, 2> lengthAndHeight;
-  float maxLength = 0;
-  float summaryHeight = 0;
-  rowsCount = 0;
+  // float maxLength = 0;
+  // float summaryHeight = 0;
+  // rowsCount = 0;
+  //
+  // size_t start = 0;
+  // TODO(AB): Now there's always one line (one delimIndex). Shaping of each line should be done separately.
+  // TODO(AB): Avoid recalculation by using width and max height from shaped text.
+  // for (auto const end : delimIndexes)
+  // {
+  //   ASSERT_NOT_EQUAL(start, end, ());
+  //   lengthAndHeight.emplace_back(0, 0);
+  //   auto & [length, height] = lengthAndHeight.back();
+  //   for (size_t glyphIndex = start; glyphIndex < end && glyphIndex < glyphRegions.size(); ++glyphIndex)
+  //   {
+  //     dp::TextureManager::GlyphRegion const & glyphRegion = glyphRegions[glyphIndex];
+  //     auto const & glyphMetrics = metrics[glyphIndex];
+  //     if (!glyphRegion.IsValid())
+  //       continue;
+  //
+  //     if (glyphIndex == start)
+  //       length -= glyphMetrics.m_xOffset * textRatio;
+  //
+  //     length += glyphMetrics.m_xAdvance * textRatio;
+  //
+  //     float yAdvance = glyphMetrics.m_yAdvance;  // TODO(AB): It is zero for horizontal layouts.
+  //     if (glyphMetrics.m_yOffset < 0)
+  //       yAdvance += glyphMetrics.m_yOffset;
+  //
+  //     height = std::max(height, (glyphRegion.GetPixelHeight() + yAdvance) * textRatio);
+  //   }
+  //   maxLength = std::max(maxLength, length);
+  //   summaryHeight += height;
+  //   if (height > 0.0f)
+  //     ++rowsCount;
+  //   start = end;
+  // }
 
-  size_t start = 0;
-  for (size_t index = 0; index < delimIndexes.size(); ++index)
-  {
-    size_t const end = delimIndexes[index];
-    ASSERT_NOT_EQUAL(start, end, ());
-    lengthAndHeight.emplace_back(0, 0);
-    auto & [length, height] = lengthAndHeight.back();
-    for (size_t glyphIndex = start; glyphIndex < end && glyphIndex < glyphs.size(); ++glyphIndex)
-    {
-      dp::TextureManager::GlyphRegion const & glyph = glyphs[glyphIndex];
-      if (!glyph.IsValid())
-        continue;
+  //ASSERT_EQUAL(delimIndexes.size(), lengthAndHeight.size(), ());
 
-      if (glyphIndex == start)
-        length -= glyph.GetOffsetX() * textRatio;
+  // TODO: Temporarily always 1
+  ASSERT_EQUAL(delimIndexes.size(), 1, ());
 
-      length += glyph.GetAdvanceX() * textRatio;
-
-      float yAdvance = glyph.GetAdvanceY();
-      if (glyph.GetOffsetY() < 0)
-        yAdvance += glyph.GetOffsetY();
-
-      height = std::max(height, (glyph.GetPixelHeight() + yAdvance) * textRatio);
-    }
-    maxLength = std::max(maxLength, length);
-    summaryHeight += height;
-    if (height > 0.0f)
-      ++rowsCount;
-    start = end;
-  }
-
-  ASSERT_EQUAL(delimIndexes.size(), lengthAndHeight.size(), ());
+  float const summaryHeight = textRatio * metrics.m_maxLineHeightInPixels;
+  float const maxLength = textRatio * metrics.m_lineWidthInPixels;
+  lengthAndHeight.emplace_back(maxLength, summaryHeight);
 
   XLayouter const xL(anchor);
   YLayouter yL(anchor, summaryHeight);
@@ -290,69 +302,79 @@ double GetTextMinPeriod(double pixelTextLength)
 }
 }  // namespace
 
-void TextLayout::Init(strings::UniString && text, float fontSize, ref_ptr<dp::TextureManager> textures)
+void TextLayout::Init(std::string const & text, float fontSize, ref_ptr<dp::TextureManager> textureManager)
 {
-  m_text = std::move(text);
-  auto const & vpi = VisualParams::Instance();
-  float const fontScale = static_cast<float>(vpi.GetFontScale());
+  ASSERT_EQUAL(std::string::npos, text.find('\n'), ("Is multiline string expected here?", text));
+
+  auto const fontScale = static_cast<float>(VisualParams::Instance().GetFontScale());
   m_textSizeRatio = fontSize * fontScale / dp::kBaseFontSizePixels;
-  textures->GetGlyphRegions(m_text, m_metrics);
+
+  // TODO(AB): StraightTextLayout used a logic to split a longer string into two strings.
+  m_shapedGlyphs = textureManager->ShapeSingleTextLine(dp::kBaseFontSizePixels, text, &m_glyphRegions);
+  //textureManager->GetGlyphRegions(m_shapedGlyphs, m_metrics);
 }
 
 ref_ptr<dp::Texture> TextLayout::GetMaskTexture() const
 {
-  ASSERT(!m_metrics.empty(), ());
+  ASSERT(!m_glyphRegions.empty(), ());
 #ifdef DEBUG
-  ref_ptr<dp::Texture> tex = m_metrics[0].GetTexture();
-  for (GlyphRegion const & g : m_metrics)
-  {
+  ref_ptr<dp::Texture> tex = m_glyphRegions[0].GetTexture();
+  for (GlyphRegion const & g : m_glyphRegions)
     ASSERT(g.GetTexture() == tex, ());
-  }
 #endif
 
-  return m_metrics[0].GetTexture();
+  return m_glyphRegions[0].GetTexture();
 }
 
-uint32_t TextLayout::GetGlyphCount() const
+size_t TextLayout::GetGlyphCount() const
 {
-  return static_cast<uint32_t>(m_metrics.size());
+  ASSERT_EQUAL(m_shapedGlyphs.m_glyphs.size(), m_glyphRegions.size(), ());
+  return m_glyphRegions.size();
 }
 
 float TextLayout::GetPixelLength() const
 {
-  return m_textSizeRatio * std::accumulate(m_metrics.begin(), m_metrics.end(), 0.0f,
-                                           [](double const & v, GlyphRegion const & glyph) -> float
-  {
-    return static_cast<float>(v) + glyph.GetAdvanceX();
-  });
+  // TODO(AB): Is ratio needed here?
+  return m_shapedGlyphs.m_lineWidthInPixels * m_textSizeRatio;
+  // return m_textSizeRatio * std::accumulate(m_glyphRegions.begin(), m_glyphRegions.end(), 0.0f,
+  //                                          [](double const & v, GlyphRegion const & glyph) -> float
+  // {
+  //   return static_cast<float>(v) + glyph.GetAdvanceX();
+  // });
 }
 
 float TextLayout::GetPixelHeight() const
 {
-  return m_textSizeRatio * dp::kBaseFontSizePixels;
+  return m_shapedGlyphs.m_maxLineHeightInPixels * m_textSizeRatio;
+  //return m_textSizeRatio * dp::kBaseFontSizePixels;
 }
 
-strings::UniString const & TextLayout::GetText() const
+dp::TGlyphs TextLayout::GetGlyphs() const
 {
-  return m_text;
+  // TODO(AB): Can conversion to TGlyphs be avoided?
+  dp::TGlyphs glyphs;
+  glyphs.reserve(m_shapedGlyphs.m_glyphs.size());
+  for (auto const & glyph : m_shapedGlyphs.m_glyphs)
+    glyphs.emplace_back(glyph.m_fontIndex, glyph.m_glyphId);
+  return glyphs;
 }
 
-StraightTextLayout::StraightTextLayout(strings::UniString const & text, float fontSize,
-                                       ref_ptr<dp::TextureManager> textures, dp::Anchor anchor, bool forceNoWrap)
+StraightTextLayout::StraightTextLayout(std::string const & text, float fontSize, ref_ptr<dp::TextureManager> textures,
+                                       dp::Anchor anchor, bool forceNoWrap)
 {
-  strings::UniString visibleText = bidi::log2vis(text);
   // Possible if name has strange symbols only.
-  if (visibleText.empty())
-    return;
+  // if (visibleText.empty())
+  //   return;
 
+  // TODO(AB): Here the text is optionally split by its length into two pieces.
   buffer_vector<size_t, 2> delimIndexes;
-  if (visibleText == text && !forceNoWrap)
-    SplitText(visibleText, delimIndexes);
-  else
-    delimIndexes.push_back(visibleText.size());
+  // if (visibleText == text && !forceNoWrap)
+  //   SplitText(visibleText, delimIndexes);
+  // else
+  delimIndexes.push_back(text.size());
 
-  TBase::Init(std::move(visibleText), fontSize, textures);
-  CalculateOffsets(anchor, m_textSizeRatio, m_metrics, delimIndexes, m_offsets, m_pixelSize, m_rowsCount);
+  Init(text, fontSize, textures);
+  CalculateOffsets(anchor, m_textSizeRatio, m_glyphRegions, m_shapedGlyphs, delimIndexes, m_offsets, m_pixelSize, m_rowsCount);
 }
 
 m2::PointF StraightTextLayout::GetSymbolBasedTextOffset(m2::PointF const & symbolSize, dp::Anchor textAnchor,
@@ -393,7 +415,7 @@ void StraightTextLayout::CacheStaticGeometry(dp::TextureManager::ColorRegion con
                                              gpu::TTextStaticVertexBuffer & staticBuffer) const
 {
   TextGeometryGenerator staticGenerator(colorRegion, staticBuffer);
-  staticBuffer.reserve(4 * m_metrics.size());
+  staticBuffer.reserve(4 * m_glyphRegions.size());
   Cache(staticGenerator);
 }
 
@@ -402,7 +424,7 @@ void StraightTextLayout::CacheStaticGeometry(dp::TextureManager::ColorRegion con
                                              gpu::TTextOutlinedStaticVertexBuffer & staticBuffer) const
 {
   TextOutlinedGeometryGenerator outlinedGenerator(colorRegion, outlineRegion, staticBuffer);
-  staticBuffer.reserve(4 * m_metrics.size());
+  staticBuffer.reserve(4 * m_glyphRegions.size());
   Cache(outlinedGenerator);
 }
 
@@ -416,15 +438,15 @@ void StraightTextLayout::CacheDynamicGeometry(glsl::vec2 const & pixelOffset,
                                               gpu::TTextDynamicVertexBuffer & dynamicBuffer) const
 {
   StraightTextGeometryGenerator generator(m_pivot, pixelOffset, m_textSizeRatio, dynamicBuffer);
-  dynamicBuffer.reserve(4 * m_metrics.size());
+  dynamicBuffer.reserve(4 * m_glyphRegions.size());
   Cache(generator);
 }
 
-PathTextLayout::PathTextLayout(m2::PointD const & tileCenter, strings::UniString const & text,
-                               float fontSize, ref_ptr<dp::TextureManager> textures)
+PathTextLayout::PathTextLayout(m2::PointD const & tileCenter, std::string const & text,
+                               float fontSize, ref_ptr<dp::TextureManager> textureManager)
   : m_tileCenter(tileCenter)
 {
-  Init(bidi::log2vis(text), fontSize, textures);
+  Init(text, fontSize, textureManager);
 }
 
 void PathTextLayout::CacheStaticGeometry(dp::TextureManager::ColorRegion const & colorRegion,
@@ -432,16 +454,20 @@ void PathTextLayout::CacheStaticGeometry(dp::TextureManager::ColorRegion const &
                                          gpu::TTextOutlinedStaticVertexBuffer & staticBuffer) const
 {
   TextOutlinedGeometryGenerator gen(colorRegion, outlineRegion, staticBuffer);
-  staticBuffer.reserve(4 * m_metrics.size());
-  std::for_each(m_metrics.begin(), m_metrics.end(), gen);
+  staticBuffer.reserve(4 * m_glyphRegions.size());
+  for (size_t i = 0; i < m_glyphRegions.size(); ++i)
+    gen(m_glyphRegions[i], m_shapedGlyphs.m_glyphs[i]);
+  //std::for_each(m_glyphRegions.begin(), m_glyphRegions.end(), gen);
 }
 
 void PathTextLayout::CacheStaticGeometry(dp::TextureManager::ColorRegion const & colorRegion,
                                          gpu::TTextStaticVertexBuffer & staticBuffer) const
 {
   TextGeometryGenerator gen(colorRegion, staticBuffer);
-  staticBuffer.reserve(4 * m_metrics.size());
-  std::for_each(m_metrics.begin(), m_metrics.end(), gen);
+  staticBuffer.reserve(4 * m_glyphRegions.size());
+  for (size_t i = 0; i < m_glyphRegions.size(); ++i)
+    gen(m_glyphRegions[i], m_shapedGlyphs.m_glyphs[i]);
+  //std::for_each(m_glyphRegions.begin(), m_glyphRegions.end(), gen);
 }
 
 bool PathTextLayout::CacheDynamicGeometry(m2::Spline::iterator const & iter, float depth,
@@ -467,20 +493,22 @@ bool PathTextLayout::CacheDynamicGeometry(m2::Spline::iterator const & iter, flo
   }
 
   m2::PointD const pxPivot = iter.m_pos;
-  buffer.resize(4 * m_metrics.size());
+  buffer.resize(4 * m_glyphRegions.size());
 
   glsl::vec4 const pivot(glsl::ToVec2(MapShape::ConvertToLocal(globalPivot, m_tileCenter,
                                                                kShapeCoordScalar)), depth, 0.0f);
-  static float const kEps = 1e-5f;
-  for (size_t i = 0; i < m_metrics.size(); ++i)
+
+  ASSERT_EQUAL(m_glyphRegions.size(), m_shapedGlyphs.m_glyphs.size(), ());
+  for (size_t i = 0; i < m_glyphRegions.size(); ++i)
   {
-    GlyphRegion const & g = m_metrics[i];
-    m2::PointF const pxSize = g.GetPixelSize() * m_textSizeRatio;
-    float const xAdvance = g.GetAdvanceX() * m_textSizeRatio;
+    auto const & glyph = m_shapedGlyphs.m_glyphs[i];
+    m2::PointF const pxSize = m_glyphRegions[i].GetPixelSize() * m_textSizeRatio;
+    float const xAdvance = glyph.m_xAdvance * m_textSizeRatio;
 
     m2::PointD const baseVector = penIter.m_pos - pxPivot;
     m2::PointD const currentTangent = penIter.m_avrDir.Normalize();
 
+    constexpr float kEps = 1e-5f;
     if (fabs(xAdvance) > kEps)
       penIter.Advance(advanceSign * xAdvance);
     m2::PointD const newTangent = penIter.m_avrDir.Normalize();
@@ -489,8 +517,8 @@ bool PathTextLayout::CacheDynamicGeometry(m2::Spline::iterator const & iter, flo
     glsl::vec2 const normal = glsl::vec2(-tangent.y, tangent.x);
     glsl::vec2 const formingVector = glsl::ToVec2(baseVector) + halfFontSize * normal;
 
-    float const xOffset = g.GetOffsetX() * m_textSizeRatio;
-    float const yOffset = g.GetOffsetY() * m_textSizeRatio;
+    float const xOffset = glyph.m_xOffset * m_textSizeRatio;
+    float const yOffset = glyph.m_yOffset * m_textSizeRatio;
 
     float const upVector = - (pxSize.y + yOffset);
     float const bottomVector = - yOffset;
@@ -515,7 +543,7 @@ bool PathTextLayout::CacheDynamicGeometry(m2::Spline::iterator const & iter, flo
 double PathTextLayout::CalculateTextLength(double textPixelLength)
 {
   // We leave a little space on each side of the text.
-  double const kTextBorder = 4.0;
+  double constexpr kTextBorder = 4.0;
   return kTextBorder + textPixelLength;
 }
 
@@ -528,7 +556,7 @@ void PathTextLayout::CalculatePositions(double splineLength, double splineScaleT
   if (textLength > splineLength * 2.0f * splineScaleToPixel)
     return;
 
-  double const kPathLengthScalar = 0.75;
+  double constexpr kPathLengthScalar = 0.75;
   double const pathLength = kPathLengthScalar * splineScaleToPixel * splineLength;
   double const minPeriodSize = GetTextMinPeriod(textLength);
   double const twoTextsAndEmpty = minPeriodSize + textLength;

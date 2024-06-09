@@ -29,19 +29,19 @@ class TextLayout
 public:
   virtual ~TextLayout() = default;
 
-  void Init(strings::UniString && text, float fontSize, ref_ptr<dp::TextureManager> textures);
+  void Init(std::string const & text, float fontSize, ref_ptr<dp::TextureManager> textureManager);
 
   ref_ptr<dp::Texture> GetMaskTexture() const;
-  uint32_t GetGlyphCount() const;
+  size_t GetGlyphCount() const;
   float GetPixelLength() const;
   float GetPixelHeight() const;
-  strings::UniString const & GetText() const;
+  dp::TGlyphs GetGlyphs() const;
 
 protected:
   using GlyphRegion = dp::TextureManager::GlyphRegion;
 
-  dp::TextureManager::TGlyphsBuffer m_metrics;
-  strings::UniString m_text;
+  dp::TextureManager::TGlyphsBuffer m_glyphRegions;
+  dp::text::TextMetrics m_shapedGlyphs;
   float m_textSizeRatio = 0.0f;
 };
 
@@ -49,7 +49,7 @@ class StraightTextLayout : public TextLayout
 {
   using TBase = TextLayout;
 public:
-  StraightTextLayout(strings::UniString const & text, float fontSize,
+  StraightTextLayout(std::string const & text, float fontSize,
                      ref_ptr<dp::TextureManager> textures, dp::Anchor anchor, bool forceNoWrap);
 
   void CacheStaticGeometry(dp::TextureManager::ColorRegion const & colorRegion,
@@ -79,8 +79,8 @@ private:
     for (auto const & [endOffset, coordinates] : m_offsets)
     {
       generator.SetPenPosition(coordinates);
-      for (size_t index = beginOffset; index < endOffset && index < m_metrics.size(); ++index)
-        generator(m_metrics[index]);
+      for (size_t index = beginOffset; index < endOffset && index < m_glyphRegions.size(); ++index)
+        generator(m_glyphRegions[index], m_shapedGlyphs.m_glyphs[index]);
       beginOffset = endOffset;
     }
   }
@@ -96,7 +96,7 @@ class PathTextLayout : public TextLayout
 {
   using TBase = TextLayout;
 public:
-  PathTextLayout(m2::PointD const & tileCenter, strings::UniString const & text,
+  PathTextLayout(m2::PointD const & tileCenter, std::string const & text,
                  float fontSize, ref_ptr<dp::TextureManager> textures);
 
   void CacheStaticGeometry(dp::TextureManager::ColorRegion const & colorRegion,

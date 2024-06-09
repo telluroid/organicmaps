@@ -6,6 +6,7 @@
 
 #include <map>
 #include <mutex>
+#include <utility>  // std::tie
 #include <vector>
 
 namespace dp
@@ -31,36 +32,31 @@ private:
 class GlyphKey : public Texture::Key
 {
 public:
-  explicit GlyphKey(strings::UniChar unicodePoint)
-    : m_unicodePoint(unicodePoint)
-  {}
+  GlyphKey(int16_t fontId, uint16_t glyphId) : m_fontIndex(fontId), m_glyphId(glyphId) {}
 
   Texture::ResourceType GetType() const override { return Texture::ResourceType::Glyph; }
-  strings::UniChar GetUnicodePoint() const { return m_unicodePoint; }
+  int16_t GetFontIndex() const { return m_fontIndex; }
+  uint16_t GetGlyphId() const { return m_glyphId; }
 
-  bool operator<(GlyphKey const & g) const
+  bool operator<(GlyphKey const & other) const
   {
-    return m_unicodePoint < g.m_unicodePoint;
+    return std::tie(m_fontIndex, m_glyphId) < std::tie (other.m_fontIndex, other.m_glyphId);
   }
 
 private:
-  strings::UniChar m_unicodePoint;
+  int16_t m_fontIndex;
+  uint16_t m_glyphId;
 };
 
+// TODO(AB): Make Texture::ResourceInfo non-abstract and use it here directly.
 class GlyphInfo : public Texture::ResourceInfo
 {
 public:
-  GlyphInfo(m2::RectF const & texRect, GlyphMetrics const & metrics)
+  explicit GlyphInfo(m2::RectF const & texRect)
     : ResourceInfo(texRect)
-    , m_metrics(metrics)
   {}
-  ~GlyphInfo() override = default;
 
   Texture::ResourceType GetType() const override { return Texture::ResourceType::Glyph; }
-  GlyphMetrics const & GetMetrics() const { return m_metrics; }
-
-private:
-  GlyphMetrics m_metrics;
 };
 
 class GlyphIndex
@@ -104,10 +100,16 @@ public:
 
   ~FontTexture() override { Reset(); }
 
-  std::vector<ref_ptr<ResourceInfo>> FindResources(std::vector<GlyphKey> const & keys, bool & hasNewResources) const
+  // std::vector<ref_ptr<ResourceInfo>> FindResources(std::vector<GlyphKey> const & keys, bool & hasNewResources) const
+  // {
+  //   ASSERT(m_indexer != nullptr, ());
+  //   return m_indexer->MapResources(keys, hasNewResources);
+  // }
+
+  ref_ptr<ResourceInfo> MapResource(GlyphKey const & key, bool & hasNewResources) const
   {
     ASSERT(m_indexer != nullptr, ());
-    return m_indexer->MapResources(keys, hasNewResources);
+    return m_indexer->MapResource(key, hasNewResources);
   }
 
   bool HasEnoughSpace(uint32_t newKeysCount) const override

@@ -19,13 +19,14 @@ namespace text
 {
 struct GlyphMetrics
 {
-  int16_t m_font;
+  int16_t m_fontIndex;
   uint16_t m_glyphId;
   // TODO(AB): Store original font units or floats?
   int32_t m_xOffset;
   int32_t m_yOffset;
   int32_t m_xAdvance;
-  // yAdvance is used only in vertical text layouts.
+  // yAdvance is used only in vertical text layouts and is 0 for horizonlat texts.
+  int32_t m_yAdvance {0};
 };
 
 // TODO(AB): Move to a separate file?
@@ -59,12 +60,12 @@ public:
   explicit GlyphManager(Params const & params);
   ~GlyphManager();
 
-  Glyph GetGlyph(strings::UniChar unicodePoints);
+  //Glyph GetGlyph(strings::UniChar unicodePoints);
 
-  void MarkGlyphReady(Glyph const & glyph);
-  bool AreGlyphsReady(strings::UniString const & str) const;
+  void MarkGlyphReady(int16_t fontIndex, uint16_t glyphId);
+  bool AreGlyphsReady(TGlyphs const & str) const;
 
-  Glyph const & GetInvalidGlyph() const;
+  //Glyph const & GetInvalidGlyph() const;
 
   int GetFontIndex(strings::UniChar unicodePoint);
   int GetFontIndex(std::u16string_view sv);

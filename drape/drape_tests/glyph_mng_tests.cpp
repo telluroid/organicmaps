@@ -92,7 +92,7 @@ public:
     for (auto const & glyph : shapedText.m_glyphs)
     {
       constexpr bool kUseSdfBitmap = false;
-      dp::GlyphImage img = m_mng->GetGlyphImage(glyph.m_font, glyph.m_glyphId, m_fontPixelSize, kUseSdfBitmap);
+      dp::GlyphImage img = m_mng->GetGlyphImage(glyph.m_fontIndex, glyph.m_glyphId, m_fontPixelSize, kUseSdfBitmap);
 
       auto const w = img.m_width;
       auto const h = img.m_height;
@@ -104,7 +104,30 @@ public:
         currentPen.ry() -= glyph.m_yOffset;
         painter.drawImage(currentPen, CreateImage(w, h, img.m_data->data()), QRect(0, 0, w, h));
       }
-      pen += QPoint(glyph.m_xAdvance, 0);
+      pen += QPoint(glyph.m_xAdvance, glyph.m_yAdvance /* 0 for horizontal texts */);
+
+      img.Destroy();
+    }
+
+    pen.rx() = 10;
+    pen.ry() = 100;
+
+    for (auto const & glyph : shapedText.m_glyphs)
+    {
+      constexpr bool kUseSdfBitmap = true;
+      GlyphImage img = m_mng->GetGlyphImage(glyph.m_fontIndex, glyph.m_glyphId, m_fontPixelSize, kUseSdfBitmap);
+
+      auto const w = img.m_width;
+      auto const h = img.m_height;
+      // Spaces do not have images.
+      if (w && h)
+      {
+        QPoint currentPen = pen;
+        currentPen.rx() += glyph.m_xOffset;
+        currentPen.ry() -= glyph.m_yOffset;
+        painter.drawImage(currentPen, CreateImage(w, h, img.m_data->data()), QRect(kSdfBorder, kSdfBorder, w - 2*kSdfBorder, h - 2*kSdfBorder));
+      }
+      pen += QPoint(glyph.m_xAdvance, glyph.m_yAdvance /* 0 for horizontal texts */);
 
       img.Destroy();
     }
@@ -112,7 +135,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     // Manual rendering using HB functions.
     {
-      QPoint hbPen(10, 100);
+      QPoint hbPen(10, 200);
 
       auto const hbLanguage = hb_language_from_string(m_lang, -1);
 
@@ -217,7 +240,7 @@ public:
     //////////////////////////////////////////////////////////////////
     // QT text renderer.
     {
-      QPoint pen(10, 150);
+      QPoint pen(10, 250);
       //QFont font("Noto Naskh Arabic");
       QFont font("Roboto");
       font.setPixelSize(m_fontPixelSize);

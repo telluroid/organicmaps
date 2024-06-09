@@ -1,20 +1,11 @@
 #pragma once
 
 #include "base/assert.hpp"
+#include "base/buffer_vector.hpp"
 #include "base/shared_buffer_manager.hpp"
-#include "base/string_utils.hpp"
 
 namespace dp
 {
-struct GlyphMetrics
-{
-  float m_xAdvance;
-  float m_yAdvance;
-  float m_xOffset;
-  float m_yOffset;
-  bool m_isValid;
-};
-
 struct GlyphImage
 {
   ~GlyphImage()
@@ -22,6 +13,7 @@ struct GlyphImage
     ASSERT_NOT_EQUAL(m_data.use_count(), 1, ("Probably you forgot to call Destroy()"));
   }
 
+  // TODO(AB): Get rid of manual call to Destroy.
   void Destroy()
   {
     if (m_data != nullptr)
@@ -37,12 +29,19 @@ struct GlyphImage
   SharedBufferManager::shared_buffer_ptr_t m_data;
 };
 
+using TGlyph = std::pair<int16_t /* fontIndex */, uint16_t /* glyphId */>;
+// TODO(AB): Measure if 32 is the best value here.
+using TGlyphs = buffer_vector<TGlyph, 32>;
+
 struct Glyph
 {
-  GlyphMetrics m_metrics;
+  Glyph(GlyphImage && image, int16_t fontIndex, uint16_t glyphId)
+  : m_image(image), m_fontIndex(fontIndex), m_glyphId(glyphId)
+  {}
+
   GlyphImage m_image;
-  int m_fontIndex;
-  strings::UniChar m_code;
+  int16_t m_fontIndex;
+  uint16_t m_glyphId;
 };
 }  // namespace dp
 

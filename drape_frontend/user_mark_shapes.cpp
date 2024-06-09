@@ -70,7 +70,7 @@ TextLayout MakePrimaryTextLayout(dp::TitleDecl const & titleDecl, ref_ptr<dp::Te
   dp::FontDecl const & fontDecl = titleDecl.m_primaryTextFont;
   auto const vs = static_cast<float>(VisualParams::Instance().GetVisualScale());
   TextLayout textLayout;
-  textLayout.Init(strings::MakeUniString(titleDecl.m_primaryText), fontDecl.m_size * vs,textures);
+  textLayout.Init(titleDecl.m_primaryText, fontDecl.m_size * vs,textures);
   return textLayout;
 }
 
