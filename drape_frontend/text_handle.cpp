@@ -2,12 +2,6 @@
 
 #include "drape/texture_manager.hpp"
 
-#include "base/logging.hpp"
-
-#include <ios>
-#include <sstream>
-#include <utility>
-
 namespace df
 {
 TextHandle::TextHandle(dp::OverlayID const & id, strings::UniString const & text, dp::Anchor anchor, uint64_t priority,

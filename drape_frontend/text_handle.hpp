@@ -6,8 +6,6 @@
 
 #include "base/string_utils.hpp"
 
-#include <string>
-
 namespace dp
 {
 class TextureManager;

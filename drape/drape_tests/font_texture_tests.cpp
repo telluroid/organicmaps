@@ -94,7 +94,7 @@ UNIT_TEST(UploadingGlyphs)
   uint32_t constexpr kTextureSize = 1024;
   GlyphManager mng(args);
   DummyGlyphIndex index(m2::PointU(kTextureSize, kTextureSize), make_ref(&mng));
-  size_t count = 1;  // invalid symbol glyph has mapped internally.
+  size_t count = 1;  // invalid symbol glyph has been mapped internally.
   count += (index.MapResource(GlyphKey(0x58)) != nullptr) ? 1 : 0;
   count += (index.MapResource(GlyphKey(0x59)) != nullptr) ? 1 : 0;
   count += (index.MapResource(GlyphKey(0x61)) != nullptr) ? 1 : 0;

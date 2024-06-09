@@ -213,7 +213,7 @@ TextSegments GetTextSegments(std::string_view utf8)
   ASSERT(std::string::npos == utf8.find_first_of("\r\n"), ("Shaping with line breaks is not supported", utf8));
 
   // TODO(AB): Can unnecessary conversion/allocation be avoided?
-  TextSegments segments {strings::ToUtf16(utf8), {}};
+  TextSegments segments {.m_text = strings::ToUtf16(utf8)};
   // TODO(AB): Runs are not split by breaking chars and by different fonts.
   GetSingleTextLineRuns(segments);
   ReorderRTL(segments);
