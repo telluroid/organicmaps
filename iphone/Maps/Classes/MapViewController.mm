@@ -106,6 +106,10 @@ NSString *const kPP2BookmarkEditingSegue = @"PP2BookmarkEditing";
 #pragma mark - Map Navigation
 
 - (void)showRegularPlacePage {
+  if (self.placePageVC != nil) {
+    [PlacePageBuilder update:self.placePageVC];
+    return;
+  }
   self.placePageVC = [PlacePageBuilder build];
   self.placePageContainer.hidden = NO;
   self.placePageVC.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -179,7 +183,6 @@ NSString *const kPP2BookmarkEditingSegue = @"PP2BookmarkEditing";
 }
 
 - (void)onMapObjectSelected {
-  [self hidePlacePage];
   [self showPlacePage];
 }
 
