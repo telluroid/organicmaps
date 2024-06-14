@@ -19795,7 +19795,7 @@
     zh-Hant = 無法使用交通資訊
 
   [enable_logging]
-    tags = android
+    tags = android,ios
     en = Enable logging
     af = Staan logboekinskrywing toe
     ar = تفعيل التسجيل
@@ -23876,7 +23876,7 @@
     zh-Hant = 最大程度省電
 
   [enable_logging_warning_message]
-    tags = android
+    tags = android,ios
     en = Enable this option temporarily to record and manually send detailed diagnostic logs about your issue to us using "Report a bug" in the Help dialog. Logs may include location info.
     af = Aktiveer hierdie opsie tydelik om ’n gedetailleerde diagnosestaat van u probleem op te neem en handmatig na ons te stuur d.m.v. die “Rapporteer ’n fout” in die Help-dialoog. Sulke state kan liggingsinligting bevat.
     ar = هذا الخيار يقوم ببدأ تسجيل سجلات التطبيق لإغراض التشخيصة. يمكن أن يكون مفيدًا لفريق الدعم الخاص بنا لحل المشاكل التي تواجهكم داخل التطبيق. قم بتفعيل هذا الخيار بشكل مؤقت فقط في حالة طلب الدعم من Organic Maps.
