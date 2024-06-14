@@ -33,7 +33,7 @@ static NSString * const kUDDidShowICloudSynchronizationEnablingAlert = @"kUDDidS
 @property(weak, nonatomic) IBOutlet SettingsTableViewLinkCell *voiceInstructionsCell;
 @property(weak, nonatomic) IBOutlet SettingsTableViewLinkCell *drivingOptionsCell;
 @property(weak, nonatomic) IBOutlet SettingsTableViewiCloudSwitchCell *iCloudSynchronizationCell;
-
+@property(weak, nonatomic) IBOutlet SettingsTableViewSwitchCell *enableLoggingCell;
 
 @end
 
@@ -192,6 +192,8 @@ static NSString * const kUDDidShowICloudSynchronizationEnablingAlert = @"kUDDidS
   [CloudStorageManager.shared addObserver:self onErrorCompletionHandler:^(NSError * _Nullable error) {
     [self.iCloudSynchronizationCell updateWithError:error];
   }];
+
+  [self.enableLoggingCell configWithDelegate:self title:L(@"enable_logging") isOn:MWMSettings.isFileLoggingEnabled];
 }
 
 - (void)show3dBuildingsAlert:(UITapGestureRecognizer *)recognizer {
@@ -324,6 +326,8 @@ static NSString * const kUDDidShowICloudSynchronizationEnablingAlert = @"kUDDidS
     } else {
       [MWMSettings setICLoudSynchronizationEnabled:value];
     }
+  } else if (cell == self.enableLoggingCell) {
+    [MWMSettings setFileLoggingEnabled:value];
   }
 }
 
@@ -368,6 +372,15 @@ static NSString * const kUDDidShowICloudSynchronizationEnablingAlert = @"kUDDidS
       return L(@"prefs_group_route");
     case 3:
       return L(@"info");
+    default:
+      return nil;
+  }
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
+  switch (section) {
+    case 1:
+      return L(@"enable_logging_warning_message");
     default:
       return nil;
   }

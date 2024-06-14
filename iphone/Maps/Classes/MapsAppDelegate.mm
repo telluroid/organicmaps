@@ -22,6 +22,7 @@
 
 #import <CoreApi/Framework.h>
 #import <CoreApi/MWMFrameworkHelper.h>
+#import <CoreApi/Logger.h>
 
 #include "map/gps_tracker.hpp"
 

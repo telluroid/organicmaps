@@ -37,4 +37,7 @@ NS_SWIFT_NAME(Settings)
 + (BOOL)iCLoudSynchronizationEnabled;
 + (void)setICLoudSynchronizationEnabled:(BOOL)iCLoudSyncEnabled;
 
++ (BOOL)isFileLoggingEnabled;
++ (void)setFileLoggingEnabled:(BOOL)fileLoggingEnabled;
+
 @end
